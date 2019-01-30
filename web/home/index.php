@@ -16,7 +16,7 @@ $user=$B->user();
 
 echo "<pre>";print_r($user);echo "</pre>";
 
-exit("ok");
+//exit("ok");
 
 if(!$B->isStaff()){
   header('location:../login');
