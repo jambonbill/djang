@@ -12,7 +12,7 @@
  * Base class
  */
 
-namespace CRM;
+namespace Djang;
 
 use PDO;
 use Exception;

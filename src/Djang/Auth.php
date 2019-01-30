@@ -10,7 +10,7 @@
  * @link     https://github.com/jambonbill
  */
 
-namespace CRM;
+namespace Djang;
 
 
 use PDO;
