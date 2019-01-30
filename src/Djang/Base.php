@@ -71,8 +71,8 @@ class Base
 
         $this->_user = $this->UD->auth_user($session['session_data']);
 
-        // Logger
-        $this->log = new CRMLog(['user_id'], 'alco', $this->_db);
+        // Logger // TODO
+        //$this->log = new Logger();
     }
 
 
