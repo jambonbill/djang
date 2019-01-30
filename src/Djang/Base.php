@@ -22,7 +22,7 @@ use Monolog\Handler\StreamHandler;
 /**
  * This Base class deal with db connection and the basic user identificaton.
  *
- * @brief Jambonbill CRM base functions
+ * @brief Jambonbill Djang base functions
  */
 class Base
 {
@@ -45,17 +45,6 @@ class Base
         }
 
 
-        /*
-        if (!$config_file_path) {
-
-            if (isset($_SESSION['configfile'])) {
-                $config_file_path = @$_SESSION['configfile'];
-            } else {
-                throw new Exception('Error: no config file');
-            }
-        }
-        */
-
         if (!is_file($config_file_path)) {
             throw new Exception('Error: no config file "' . $config_file_path . '"');
         } else {
@@ -66,10 +55,10 @@ class Base
         }
 
         //User
-        $this->UD=new \Django\UserDjango($this->_db);
-        $session = $this->UD->djangoSession();//
+        $this->_UD=new \Django\UserDjango($this->_db);
+        $session = $this->_UD->djangoSession();//
 
-        $this->_user = $this->UD->auth_user($session['session_data']);
+        $this->_user = $this->_UD->auth_user($session['session_data']);
 
         // Logger // TODO
         //$this->log = new Logger();
