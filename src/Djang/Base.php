@@ -28,6 +28,7 @@ class Base
 {
     private $_db;
     private $_UD;
+    private $_config;
     private $_user;
     private $log = null;//logger
 
@@ -49,7 +50,7 @@ class Base
             throw new Exception('Error: no config file "' . $config_file_path . '"');
         } else {
             // Load configuration
-            $this->config = json_decode(file_get_contents($config_file_path));
+            $this->_config = json_decode(file_get_contents($config_file_path));
             //print_r($this->config->pdo);
             $this->_connect();
         }
@@ -73,11 +74,11 @@ class Base
     private function _connect()
     {
 
-        $db_host = $this->config->pdo->host;
-        $db_name = $this->config->pdo->name;
-        $db_driver=$this->config->pdo->driver;
-        $db_user = $this->config->pdo->user;
-        $db_pass = $this->config->pdo->pass;
+        $db_host = $this->_config->pdo->host;
+        $db_name = $this->_config->pdo->name;
+        $db_driver=$this->_config->pdo->driver;
+        $db_user = $this->_config->pdo->user;
+        $db_pass = $this->_config->pdo->pass;
 
         try {
             $dsn = $db_driver . ":host=" . $db_host . ";dbname=" . $db_name . ";charset=utf8";
@@ -98,6 +99,12 @@ class Base
     public function db()
     {
         return $this->_db;
+    }
+
+
+    public function config()
+    {
+        return $this->_config;
     }
 
 
