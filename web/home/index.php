@@ -12,8 +12,10 @@ $B=new Djang\Base("../../profiles/127.0.0.1.json");
 
 $B->logout();
 
+$conf=$B->config();
 $user=$B->user();
 
+echo "<pre>";print_r($conf);echo "</pre>";
 echo "<pre>";print_r($user);echo "</pre>";
 
 //exit("ok");
