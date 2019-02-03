@@ -18,6 +18,7 @@ use PDO;
 use Exception;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use MySQLHandler\MySQLHandler;
 
 /**
  * This Base class deal with db connection and the basic user identificaton.
@@ -51,18 +52,34 @@ class Base
         } else {
             // Load configuration
             $this->_config = json_decode(file_get_contents($config_file_path));
-            //print_r($this->config->pdo);
+            $err=json_last_error();
+            if($err){
+                exit("JSON error: $err\n");
+            }
+            //print_r($this->_config->pdo);exit;
             $this->_connect();
         }
 
         //User
-        $this->_UD=new \Django\UserDjango($this->_db);
+        $this->_UD=new UserDjango($this->_db);
         $session = $this->_UD->djangoSession();//
 
         $this->_user = $this->_UD->auth_user($session['session_data']);
 
         // Logger // TODO
-        //$this->log = new Logger();
+        $this->log = new Logger('djang');
+
+        $table=$this->_config->logger->table;
+
+        //$handler=new MySQLHandler($this->_db, $table, array('user_id'), Logger::DEBUG );
+        $mySQLHandler = new MySQLHandler($this->_db, $table, array('userid'), \Monolog\Logger::DEBUG);
+
+        $this->log->pushHandler($mySQLHandler);//, $additionalFields
+
+        // logger
+        //$this->log = new EdLog(['user_id'], 'edtech', $this->db);
+
+        //$this->log->addInfo("(test)", ['user_id' => 333]);//test logger
     }
 
 

@@ -32,6 +32,7 @@ class User
 {
     private $_Base;
 
+
     /**
      * Dependency injection
      *
@@ -42,6 +43,7 @@ class User
         $this->_Base=$B;
         //$this->_user=$B->user();
     }
+
 
     /**
      * Return db connector
@@ -118,6 +120,16 @@ class User
 
 
     /**
+     * Remove this
+     * @return [type] [description]
+     */
+    public function testlog()
+    {
+        $this->log()->addInfo(__FUNCTION__, ['user_id'=>333]);
+    }
+
+
+    /**
      * Create a active django/edx user
      * @param  string $email       must be unique, 75 chars max
      * @param  string $first_name  first name, 30 chars max
@@ -158,7 +170,7 @@ class User
 
         $userid=$this->db()->lastInsertId();
 
-        $this->userProfileCreate($userid);
+        //$this->userProfileCreate($userid);//not strictly necessary
 
         return $userid;
     }
@@ -166,7 +178,7 @@ class User
 
     /**
      * Update user record
-     *
+     * email, first_name, last_name
      * @return [type] [description]
      */
     public function update($user_id=0, $data=[])
@@ -192,6 +204,7 @@ class User
 
         return true;
     }
+
 
     public function updateProfile($user_id, $data)
     {
@@ -245,7 +258,7 @@ class User
         $sql = "UPDATE `auth_user` SET is_active=1 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
 
-        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->user_id()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->_uid()]);
 
         return true;
     }
@@ -268,7 +281,7 @@ class User
 
         $sql = "UPDATE `auth_user` SET is_active=0 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
-        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->user_id()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->_uid()]);
 
         return true;
     }
@@ -342,54 +355,18 @@ class User
             return false;
         }
 
-        $sql = "UPDATE auth_user SET password='$pass' WHERE id=$user_id LIMIT 1;";
+        $UD=new UserDjango($this->db());
+        $encrypted=$UD->djangopassword($pass);//encrypt
+
+        $sql = "UPDATE auth_user SET password=".$this->db()->quote($encrypted)." WHERE id=$user_id LIMIT 1;";
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
-        $this->log()->addInfo(__FUNCTION__."($user_id,password)", ['user_id'=>$this->user_id()]);
+        $this->log()->addInfo(__FUNCTION__."($user_id,password)", ['user_id'=>$this->_uid()]);
 
         return true;
     }
 
 
-
-    /**
-     * Return a techer record
-     * @param  integer $id [description]
-     * @return [type]      [description]
-     */
-    /*
-    public function teacher($id=0)
-    {
-
-        $id*=1;
-        if(!$id)return false;
-
-        $sql="SELECT * FROM `teachers` WHERE t_id=$id LIMIT 1;";
-        $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
-
-        $r=$q->fetch(PDO::FETCH_ASSOC);
-        return $r;
-    }
-    */
-
-
-    /**
-     * Return a student record
-     * @param  integer $id [description]
-     * @return [type]      [description]
-     */
-    /*
-    public function student($id=0)
-    {
-        $id*=1;
-        if(!$id)return false;
-
-        $sql="SELECT * FROM `students` WHERE s_id=$id LIMIT 1;";
-        $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
-        $r=$q->fetch(PDO::FETCH_ASSOC);
-        return $r;
-    }
-    */
 
 
     /**
