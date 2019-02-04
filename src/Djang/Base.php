@@ -69,16 +69,16 @@ class Base
         // Logger // TODO
         $this->log = new Logger('djang');
 
-        $table=$this->_config->logger->table;
+        $table='djang_log';
+        if (isset($this->_config->logger->table)) {
+            $table=$this->_config->logger->table;
+        }
 
-        //$handler=new MySQLHandler($this->_db, $table, array('user_id'), Logger::DEBUG );
         $mySQLHandler = new MySQLHandler($this->_db, $table, array('userid'), \Monolog\Logger::DEBUG);
 
         $this->log->pushHandler($mySQLHandler);//, $additionalFields
 
         // logger
-        //$this->log = new EdLog(['user_id'], 'edtech', $this->db);
-
         //$this->log->addInfo("(test)", ['user_id' => 333]);//test logger
     }
 
