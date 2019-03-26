@@ -323,19 +323,29 @@ class User
 
 
     /**
-     * Return the user id of the user for a given email adress
-     *
+     * Return the user_id, for a given username or email adress
      * @return [type] [description]
      */
-    public function userExist($email = '')
+    public function exist($username='')
     {
-        $email=trim($email);
+        $username=trim($username);
 
-        $sql="SELECT id FROM auth_user WHERE email LIKE '$email';";
+        //detect email//
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            //a valid email address
+            $sql="SELECT id FROM auth_user WHERE email LIKE ".$this->db()->quote($username)." LIMIT 1;";
+        } else {
+            //not a email address
+            $sql="SELECT id FROM auth_user WHERE username LIKE ".$this->db()->quote($username)." LIMIT 1;";
+        }
+
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
         $r=$q->fetch(PDO::FETCH_ASSOC);
-        return $r['id'];
+        if ($r) {
+            return $r['id'];
+        }
+        return false;
     }
 
 
