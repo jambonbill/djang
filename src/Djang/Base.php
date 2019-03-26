@@ -66,6 +66,12 @@ class Base
 
         $this->_user = $this->_UD->auth_user($session['session_data']);
 
+        // Update session keys
+        $_SESSION['{email}']=   $this->_user['email'];
+        $_SESSION['{username}']=$this->_user['username'];
+        $_SESSION['{first_name}']=$this->_user['first_name'];
+        $_SESSION['{last_name}']=$this->_user['last_name'];
+
         // Logger // TODO
         $this->log = new Logger('djang');
 
@@ -331,6 +337,12 @@ class Base
 
         $r=$q->fetch(PDO::FETCH_ASSOC);
         return $r['username'];
+    }
+
+
+    public function authUsers($userids=[])
+    {
+        //TODO
     }
 
 }
