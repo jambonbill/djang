@@ -350,25 +350,23 @@ class User
 
 
     /**
-     * Update user Password. Password must be encrypted first
+     * Update user Password
+     * Password must be encrypted first !
      *
      * @param integer $user_id [description]
      * @param string  $pass    [description]
      *
      * @return [type]           [description]
      */
-    public function updatePassword($user_id = 0, $pass = '')
+    public function updatePassword($user_id = 0, $password = '')
     {
         $user_id*=1;
 
-        if (!$pass || !$user_id) {
+        if (!$password || !$user_id) {
             return false;
         }
 
-        $UD=new UserDjango($this->db());
-        $encrypted=$UD->djangopassword($pass);//encrypt
-
-        $sql = "UPDATE auth_user SET password=".$this->db()->quote($encrypted)." WHERE id=$user_id LIMIT 1;";
+        $sql = "UPDATE auth_user SET password=".$this->db()->quote($password)." WHERE id=$user_id LIMIT 1;";
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
         $this->log()->addInfo(__FUNCTION__."($user_id,password)", ['user_id'=>$this->_uid()]);
