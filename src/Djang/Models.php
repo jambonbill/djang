@@ -124,6 +124,20 @@ class Models
         //todo
     }
 
+
+    public function showTables()
+    {
+        $sql="SHOW TABLES;";
+        $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true) . "<hr />$sql");
+        $dat=[];
+        while($r=$q->fetch()){
+            $dat[]=$r;
+        }
+        return $dat;
+
+    }
+
+
     public function createTables()
     {
 
