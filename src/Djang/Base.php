@@ -314,7 +314,7 @@ class Base
     public function countries()
     {
 
-        $sql="SELECT gc_alpha2 AS code, gc_name as name, gc_nationality as nationality FROM `geo_country` WHERE gc_id>0 ORDER BY gc_name;";
+        $sql="SELECT gc_code2 AS code, gc_name as name, gc_nationality as nationality FROM `geo_country` WHERE gc_id>0 ORDER BY gc_name;";
         $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
 
         $dat=[];
@@ -325,7 +325,34 @@ class Base
     }
 
 
-    public function username($user_id=0)
+    /**
+     * Return the list of nationalities and associated country codes
+     * @return [type] [description]
+     */
+    public function nationalities()
+    {
+
+        $sql="SELECT gc_nationality, gc_code2 AS code FROM `geo_country` WHERE gc_id>0 ORDER BY gc_nationality;";
+        $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
+
+        $dat=[];
+
+        while($r=$q->fetch(PDO::FETCH_ASSOC)){
+            if(!$r['code'])continue;
+            if(!$r['gc_nationality'])continue;
+            $dat[$r['code']]=$r['gc_nationality'];
+        }
+        return $dat;
+
+    }
+
+
+    /**
+     * Return username for given userid
+     * @param  integer $user_id [description]
+     * @return [type]           [description]
+     */
+    public function userName($user_id=0)
     {
         $user_id*=1;
         if(!$user_id){
