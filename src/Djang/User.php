@@ -149,7 +149,7 @@ class User
             return false;
         }
 
-        if ($uid = $this->userExist($email)) {
+        if ($uid = $this->exist($email)) {
             return $uid;
         }
 
