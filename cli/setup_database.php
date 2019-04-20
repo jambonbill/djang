@@ -8,6 +8,7 @@ echo "Djang\Models->createTables()\n";
 
 $Models->createTables();
 
+// Make sure the models are correct, issue warnings if they are not.
 
 // TODO //
 exit("done\n");
