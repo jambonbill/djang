@@ -154,6 +154,66 @@ class Base
 
 
     /**
+     * Log in.
+     * @param  string $email    [description]
+     * @param  string $password [description]
+     * @return [type]           [description]
+     */
+    public function login($email='', $password='')
+    {
+        if (!$email) {
+            throw new Exception("Error : no email", 1);            
+        }
+
+        if (!$password) {
+            throw new Exception("Error : no password", 1);            
+        }
+
+
+        if ($this->_UD->login($_POST['email'], $_POST['password'])) {
+            $session = $this->_UD->djangoSession();//
+            $this->_user = $this->_UD->auth_user($session['session_data']);
+        } else {
+            //log fail
+            return false;
+        }
+    
+        $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
+        return true;
+    }
+
+
+    /**
+     * Login accept staff only
+     * @param  string $email    [description]
+     * @param  string $password [description]
+     * @return [type]           [description]
+     */
+    public function loginStaff($email='', $password='')
+    {
+        if (!$email) {
+            throw new Exception("Error : no email", 1);            
+        }
+
+        if (!$password) {
+            throw new Exception("Error : no password", 1);            
+        }
+
+        if ($this->_UD->loginStaff($_POST['email'], $_POST['password'])) {
+            $session = $this->_UD->djangoSession();//
+            $this->_user = $this->_UD->auth_user($session['session_data']);
+        } else {
+            //log fail
+            return false;
+        }
+    
+        $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
+        return true;
+    }
+
+    
+
+    /**
      * End user session
      *
      * @return [type] [description]
@@ -164,6 +224,7 @@ class Base
         $this->_UD->logout();
         return true;
     }
+    
 
 
     /**
