@@ -154,6 +154,7 @@ class Base
      */
     public function logout()
     {
+        $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
         $this->_UD->logout();
         return true;
     }
