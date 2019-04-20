@@ -66,6 +66,12 @@ class Base
 
         $this->_user = $this->_UD->auth_user($session['session_data']);
 
+        // Update session keys
+        $_SESSION['{email}']=   $this->_user['email'];
+        $_SESSION['{username}']=$this->_user['username'];
+        $_SESSION['{first_name}']=$this->_user['first_name'];
+        $_SESSION['{last_name}']=$this->_user['last_name'];
+
         // Logger // TODO
         $this->log = new Logger('djang');
 
@@ -309,7 +315,7 @@ class Base
     public function countries()
     {
 
-        $sql="SELECT gc_alpha2 AS code, gc_name as name, gc_nationality as nationality FROM `geo_country` WHERE gc_id>0 ORDER BY gc_name;";
+        $sql="SELECT gc_code2 AS code, gc_name as name, gc_nationality as nationality FROM `geo_country` WHERE gc_id>0 ORDER BY gc_name;";
         $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
 
         $dat=[];
@@ -320,7 +326,34 @@ class Base
     }
 
 
-    public function username($user_id=0)
+    /**
+     * Return the list of nationalities and associated country codes
+     * @return [type] [description]
+     */
+    public function nationalities()
+    {
+
+        $sql="SELECT gc_nationality, gc_code2 AS code FROM `geo_country` WHERE gc_id>0 ORDER BY gc_nationality;";
+        $q=$this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
+
+        $dat=[];
+
+        while($r=$q->fetch(PDO::FETCH_ASSOC)){
+            if(!$r['code'])continue;
+            if(!$r['gc_nationality'])continue;
+            $dat[$r['code']]=$r['gc_nationality'];
+        }
+        return $dat;
+
+    }
+
+
+    /**
+     * Return username for given userid
+     * @param  integer $user_id [description]
+     * @return [type]           [description]
+     */
+    public function userName($user_id=0)
     {
         $user_id*=1;
         if(!$user_id){
@@ -332,6 +365,12 @@ class Base
 
         $r=$q->fetch(PDO::FETCH_ASSOC);
         return $r['username'];
+    }
+
+
+    public function authUsers($userids=[])
+    {
+        //TODO
     }
 
 }

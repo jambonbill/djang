@@ -149,7 +149,7 @@ class User
             return false;
         }
 
-        if ($uid = $this->userExist($email)) {
+        if ($uid = $this->exist($email)) {
             return $uid;
         }
 
@@ -323,42 +323,50 @@ class User
 
 
     /**
-     * Return the user id of the user for a given email adress
-     *
+     * Return the user_id, for a given username or email adress
      * @return [type] [description]
      */
-    public function userExist($email = '')
+    public function exist($username='')
     {
-        $email=trim($email);
+        $username=trim($username);
 
-        $sql="SELECT id FROM auth_user WHERE email LIKE '$email';";
+        //detect email//
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            //a valid email address
+            $sql="SELECT id FROM auth_user WHERE email LIKE ".$this->db()->quote($username)." LIMIT 1;";
+        } else {
+            //not a email address
+            $sql="SELECT id FROM auth_user WHERE username LIKE ".$this->db()->quote($username)." LIMIT 1;";
+        }
+
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
         $r=$q->fetch(PDO::FETCH_ASSOC);
-        return $r['id'];
+        if ($r) {
+            return $r['id'];
+        }
+        return false;
     }
 
 
     /**
-     * Update user Password. Password must be encrypted first
+     * Update user Password
+     * Password must be encrypted first !
      *
      * @param integer $user_id [description]
      * @param string  $pass    [description]
      *
      * @return [type]           [description]
      */
-    public function updatePassword($user_id = 0, $pass = '')
+    public function updatePassword($user_id = 0, $password = '')
     {
         $user_id*=1;
 
-        if (!$pass || !$user_id) {
+        if (!$password || !$user_id) {
             return false;
         }
 
-        $UD=new UserDjango($this->db());
-        $encrypted=$UD->djangopassword($pass);//encrypt
-
-        $sql = "UPDATE auth_user SET password=".$this->db()->quote($encrypted)." WHERE id=$user_id LIMIT 1;";
+        $sql = "UPDATE auth_user SET password=".$this->db()->quote($password)." WHERE id=$user_id LIMIT 1;";
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
         $this->log()->addInfo(__FUNCTION__."($user_id,password)", ['user_id'=>$this->_uid()]);
