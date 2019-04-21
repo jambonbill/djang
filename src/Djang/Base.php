@@ -173,6 +173,7 @@ class Base
         if ($this->_UD->login($_POST['email'], $_POST['password'])) {
             $session = $this->_UD->djangoSession();//
             $this->_user = $this->_UD->auth_user($session['session_data']);
+            $this->logAgent();
         } else {
             //log fail
             return false;
@@ -202,6 +203,7 @@ class Base
         if ($this->_UD->loginStaff($_POST['email'], $_POST['password'])) {
             $session = $this->_UD->djangoSession();//
             $this->_user = $this->_UD->auth_user($session['session_data']);
+            $this->logAgent();
         } else {
             //log fail
             return false;
@@ -223,6 +225,22 @@ class Base
         $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
         $this->_UD->logout();
         return true;
+    }
+
+
+    /**
+     * Log user agent and ip
+     * @return [type] [description]
+     */
+    private function logAgent()
+    {
+        $agent=$_SERVER['HTTP_USER_AGENT'];
+        $ip=substr($_SERVER['REMOTE_ADDR'],0,255);
+        $sql="INSERT INTO auth_user_agent (aua_user_id, aua_user_agent, aua_ip, aua_created) ";
+        $sql.="VALUES (".$this->userId().",".$this->db()->quote($agent).",".$this->db()->quote($ip).", NOW());";
+        $this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true) . "<hr />$sql");
+        $id=$this->db()->lastInsertId();
+        return $id;
     }
     
 
