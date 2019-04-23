@@ -300,13 +300,10 @@ class UserDjango
     {
         //echo __FUNCTION__."()\n";
         $sid=session_id();
-
-        $sql = "DELETE FROM django_session WHERE session_key=".$this->db()->quote($sid).";";
+        $sql = "DELETE FROM django_session WHERE session_key=".$this->db->quote($sid).";";
         $q=$this->db->query($sql) or die(print_r($this->db->errorInfo()));
-
         //$this->log->addInfo(__FUNCTION__, ['session_key' => $sid]);
         //ob_clean();//this clear the output buffer, i'm not sure why i need it
-
         if (@session_regenerate_id(true)) {
             @$_SESSION['configfile']='';
             return session_id();
@@ -314,7 +311,6 @@ class UserDjango
 
         return false;
     }
-
 
 
 
