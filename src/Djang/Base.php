@@ -232,10 +232,17 @@ class Base
      */
     private function logAgent()
     {
+        $agent='';
+        $ip='';
         
-        $agent=substr($_SERVER['HTTP_USER_AGENT'],0,255);
-        $ip=trim($_SERVER['REMOTE_ADDR']);
-
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            $agent=substr($_SERVER['HTTP_USER_AGENT'], 0, 255);
+        }
+        
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip=trim($_SERVER['REMOTE_ADDR']);
+        }
+        
         $sql="INSERT INTO auth_user_agent (aua_user_id, aua_user_agent, aua_ip, aua_created) ";
         $sql.="VALUES (".$this->userId().",".$this->db()->quote($agent).",".$this->db()->quote($ip).", NOW());";
         
