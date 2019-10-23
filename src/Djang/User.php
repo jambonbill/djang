@@ -400,4 +400,18 @@ class User
         return $user;
     }
 
+
+    /**
+     * [has_perm description]
+     * Assuming you have an application with an app_label foo and a model named Bar,
+     * to test for basic permissions you should use:
+     * add: user.has_perm('foo.add_bar')
+     * @param  string  $perm [description]
+     * @return boolean       [description]
+     */
+    public function has_perm($perm='')
+    {
+
+    }
+
 }
