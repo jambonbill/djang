@@ -245,13 +245,18 @@ class Auth
 
 
     /**
-     * Delete one record
+     * Remove a group-user
      * @param  integer $id [description]
      * @return [type]      [description]
      */
     public function groupUserDelete($id=0)
     {
-        //TODO
+        $id*=1;
+
+        if (!$id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
         $sql="DELETE FROM auth_user_groups WHERE id=$id LIMIT 1;";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
         return true;
@@ -269,7 +274,7 @@ class Auth
         $user_id*=1;
 
         if (!$user_id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql='SELECT group_id FROM auth_user_groups WHERE user_id='.$user_id.';';
@@ -336,20 +341,19 @@ class Auth
 
     //auth_permission -> the definiton of a permision, ex: "Can add user", "can send mail"
 
-    public function permission($id=0)////return one permission
-    {
-        $sql='SELECT * FROM auth_permission WHERE id=$id LIMIT 1;';
-
-    }
-
-
 
 
 
     //auth_user_groups -> (id, user_id, group_id)
 
 
-    //auth_user_user_permission -> ( id, user_id, permission_id)
+
+    /**
+     * Return permissions for given user.
+     * Do NOT return permission from any group
+     * @param  integer $user_id [description]
+     * @return [type]           [description]
+     */
     public function userPermissions($user_id=0)
     {
         $user_id*=1;
@@ -384,6 +388,11 @@ class Auth
             throw new Exception("Error Processing Request", 1);
         }
 
+        // Check that permission exist
+        if(!$this->permission($permission_id)){
+            throw new Exception("Error Processing permission", 1);
+        }
+
         $sql="INSERT INTO auth_user_user_permissions (user_id, permission_id) VALUES (".$this->db()->quote($user_id).",".$this->db()->quote($permission_id).");";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
 
@@ -409,6 +418,30 @@ class Auth
         return $id;
     }
 
+
+
+    /**
+     * Return one permission
+     * @param  integer $id [description]
+     * @return [type]      [description]
+     */
+    public function permission($id=0)
+    {
+        $id*=1;
+
+        if (!$id) {
+            return false;
+        }
+
+        $sql='SELECT * FROM auth_permission WHERE id=$id LIMIT 1;';
+        $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+
+        if($r=$q->fetch(PDO::FETCH_ASSOC)){
+            return $r;
+        }
+
+        return false;
+    }
 
 
     /**
@@ -450,6 +483,7 @@ class Auth
 
     /**
      * Return list of content types
+     * https://docs.djangoproject.com/en/2.2/ref/contrib/contenttypes/
      * @return [type] [description]
      */
     public function django_content_types()
