@@ -1,6 +1,7 @@
 <?php
 /**
  * CRM Class Auth
+ * Heavily inspired by django auth
  * PHP version 7
  *
  * @category CRM
@@ -105,6 +106,12 @@ class Auth
     }
 
 
+
+    /**
+     * Return group record
+     * @param  integer $id [description]
+     * @return [type]      [description]
+     */
     public function group($id=0)
     {
         $id*=1;
@@ -123,6 +130,12 @@ class Auth
         return false;
     }
 
+
+    /**
+     * Create auth group
+     * @param  string $name [description]
+     * @return [type]       [description]
+     */
     public function groupCreate($name='')
     {
         $name=trim($name);
@@ -133,14 +146,22 @@ class Auth
 
         $sql="INSERT INTO auth_group (name) VALUES (".$this->db()->quote($name).");";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
-        return true;
+
+        $id=$this->db()->lastInsertId();
+        return $id;
     }
 
 
+    /**
+     * Delete one group
+     * @param  integer $id [description]
+     * @return [type]      [description]
+     */
     public function groupDelete($id=0)
     {
         $id*=1;
-        if(!$id){
+
+        if (!$id) {
             return false;
         }
 
@@ -151,6 +172,11 @@ class Auth
 
 
 
+    /**
+     * Return list of group permissions
+     * @param  integer $group_id [description]
+     * @return [type]            [description]
+     */
     public function groupPermissions($group_id=0)
     {
         $group_id*=1;
@@ -212,7 +238,8 @@ class Auth
         $sql="INSERT INTO auth_user_groups (user_id, group_id) VALUES ($user_id, $group_id);";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
 
-        return true;
+        $id=$this->db()->lastInsertId();
+        return $id;
     }
 
 
@@ -257,20 +284,46 @@ class Auth
     }
 
 
+    /**
+     * Add a permission to a group
+     * @param  integer $group_id      [description]
+     * @param  integer $permission_id [description]
+     * @return [type]                 [description]
+     */
     public function groupPermissionAdd($group_id=0, $permission_id=0)
     {
         $group_id*=1;
         $permission_id*=1;
 
+        if (!$group_id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        if (!$permission_id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        //make sure permission exist
+        $sql="INSERT INTO auth_group_permissions (group_id, permission_id) VALUES ($group_id, $permission_id);";
+        $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+        return $this->db()->lastInsertId();
     }
 
 
+    /**
+     * Delete a group permission
+     * @param  integer $id [description]
+     * @return [type]      [description]
+     */
     public function groupPermissionDelete($id=0)
     {
         $id*=1;
+
         if (!$id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
+
+        //make sure permission exist
 
         $sql="DELETE FROM auth_group_permissions WHERE id=$id LIMIT 1;";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -302,7 +355,7 @@ class Auth
         $user_id*=1;
 
         if (!$user_id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql='SELECT * FROM auth_user_user_permissions WHERE user_id='.$user_id.';';
@@ -316,15 +369,44 @@ class Auth
     }
 
 
+    /**
+     * Add a user-permission - auth_user_user_permissions
+     * @param  integer $user_id       [description]
+     * @param  integer $permission_id [description]
+     * @return [type]                 [description]
+     */
     public function userPermissionAdd($user_id=0, $permission_id=0)
     {
+        $user_id*=1;
+        $permission_id*=1;
 
+        if (!$user_id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        $sql="INSERT INTO auth_user_user_permissions (user_id, permission_id) VALUES (".$this->db()->quote($user_id).",".$this->db()->quote($permission_id).");";
+        $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+
+        return $this->db()->lastInsertId();
     }
 
 
+    /**
+     * Delete a user-permission - auth_user_user_permissions
+     * @param  integer $id [description]
+     * @return [type]      [description]
+     */
     public function userPermissionDelete($id=0)
     {
+        $id*=1;
 
+        if (!$id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        $sql="DELETE FROM auth_user_user_permissions WHERE id=".$id." LIMIT 1;";
+        $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+        return $id;
     }
 
 
