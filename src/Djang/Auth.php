@@ -118,7 +118,7 @@ class Auth
         $id*=1;
 
         if (!$id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql='SELECT * FROM auth_group WHERE id='.$id.' LIMIT 1;';
@@ -142,7 +142,7 @@ class Auth
         $name=trim($name);
 
         if (!$name) {
-            return false;
+            throw new Exception("Error Processing Group name", 1);
         }
 
         $sql="INSERT INTO auth_group (name) VALUES (".$this->db()->quote($name).");";
@@ -163,7 +163,7 @@ class Auth
         $id*=1;
 
         if (!$id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql="DELETE FROM auth_group WHERE id=$id LIMIT 1;";
@@ -183,7 +183,7 @@ class Auth
         $group_id*=1;
 
         if (!$group_id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql='SELECT * FROM auth_group_permissions WHERE group_id="'.$this->db()->quote($group_id).'";';
@@ -208,7 +208,7 @@ class Auth
         $group_id*=1;
 
         if (!$group_id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
         $sql='SELECT user_id FROM auth_user_groups WHERE group_id='.$group_id.';';
@@ -431,10 +431,10 @@ class Auth
         $id*=1;
 
         if (!$id) {
-            return false;
+            throw new Exception("Error Processing Request", 1);
         }
 
-        $sql='SELECT * FROM auth_permission WHERE id=$id LIMIT 1;';
+        $sql='SELECT * FROM auth_permission WHERE id='.$this->db()->quote($id).' LIMIT 1;';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
 
         if($r=$q->fetch(PDO::FETCH_ASSOC)){
