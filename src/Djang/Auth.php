@@ -529,4 +529,28 @@ class Auth
         return false;
     }
 
+
+    /**
+     * Return user_id
+     * @param  string $email [description]
+     * @return [type]        [description]
+     */
+    public function exist($email='')
+    {
+        $email=trim($email);
+
+        if (!$email) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        $sql="SELECT id FROM auth_user WHERE email LIKE ".$this->db()->quote($email)." LIMIT 1;";
+        $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+
+        if ($r=$q->fetch(PDO::FETCH_ASSOC)) {
+            return $r['id'];
+        }
+
+        return false;
+    }
+
 }
