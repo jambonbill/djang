@@ -15,6 +15,7 @@ namespace Djang;
 
 
 use PDO;
+use Exception;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -185,7 +186,7 @@ class Auth
             return false;
         }
 
-        $sql='SELECT * FROM auth_group_permissions WHERE group_id=$group_id;';
+        $sql='SELECT * FROM auth_group_permissions WHERE group_id="'.$this->db()->quote($group_id).'";';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
 
         $dat=[];
