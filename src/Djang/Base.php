@@ -162,11 +162,11 @@ class Base
     public function login($email='', $password='')
     {
         if (!$email) {
-            throw new Exception("Error : no email", 1);            
+            throw new Exception("Error : no email", 1);
         }
 
         if (!$password) {
-            throw new Exception("Error : no password", 1);            
+            throw new Exception("Error : no password", 1);
         }
 
 
@@ -177,7 +177,7 @@ class Base
         } else {
             return false;//log fail
         }
-    
+
         $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
         return true;
     }
@@ -192,11 +192,11 @@ class Base
     public function loginStaff($email='', $password='')
     {
         if (!$email) {
-            throw new Exception("Error : no email", 1);            
+            throw new Exception("Error : no email", 1);
         }
 
         if (!$password) {
-            throw new Exception("Error : no password", 1);            
+            throw new Exception("Error : no password", 1);
         }
 
         if ($this->_UD->loginStaff($email, $password)) {
@@ -206,12 +206,12 @@ class Base
         } else {
             return false;//log fail
         }
-    
+
         $this->log()->addInfo(__FUNCTION__, ['userid' => $this->userId()]);//LOG
         return true;
     }
 
-    
+
 
     /**
      * End user session
@@ -234,24 +234,24 @@ class Base
     {
         $agent='';
         $ip='';
-        
+
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $agent=substr($_SERVER['HTTP_USER_AGENT'], 0, 255);
         }
-        
+
         if (isset($_SERVER['REMOTE_ADDR'])) {
             $ip=trim($_SERVER['REMOTE_ADDR']);
         }
-        
+
         $sql="INSERT INTO auth_user_agent (aua_user_id, aua_user_agent, aua_ip, aua_created) ";
         $sql.="VALUES (".$this->userId().",".$this->db()->quote($agent).",".$this->db()->quote($ip).", NOW());";
-        
+
         $this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true) . "<hr />$sql");
-        
+
         $id=$this->db()->lastInsertId();
         return $id;
     }
-    
+
 
 
     /**
@@ -391,6 +391,8 @@ class Base
      */
     public function ctrl()
     {
+        //must make sure the refferer is local
+        $this->log()->addInfo(print_r($_SERVER['PHP_SELF'],1), ['userid' => $this->userId()]);
         return true;
     }
 
