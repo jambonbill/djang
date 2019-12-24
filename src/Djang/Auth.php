@@ -502,10 +502,10 @@ class Auth
 
     /**
      * Perform a quick integrity check
+     * yes this is crap
      * @return [type] [description]
      */
-    public function check_content_types()
-    {
+    public function check_content_types(){
 
         $sql="SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE();";
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -522,10 +522,8 @@ class Auth
                 //echo ".";
             }else{
                 echo "Error: table `$tablename` not found\n";
-
             }
         }
-
         return false;
     }
 
@@ -551,6 +549,30 @@ class Auth
         }
 
         return false;
+    }
+
+
+    /**
+     * Return list of User Agents for given user
+     * @param  integer $user_id [description]
+     * @return [type]           [description]
+     */
+    public function userAgents($user_id=0)
+    {
+        $user_id*=1;
+
+        if (!$user_id) {
+            throw new Exception("Error Processing Request", 1);
+        }
+
+        $sql="SELECT * FROM auth_user_agent WHERE aua_user_id=".$this->db()->quote($user_id)." ORDER BY aua_id DESC;";
+        $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
+
+        $dat=[];
+        while ($r=$q->fetch(PDO::FETCH_ASSOC)) {
+            $dat[]=$r;
+        }
+        return $dat;
     }
 
 }
