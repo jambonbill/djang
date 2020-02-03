@@ -43,7 +43,8 @@ class Base
         if ($path) {
             $config_file_path=realpath($path);
         }else{
-            $config_file_path='../../profiles/'.$_SERVER['HTTP_HOST'].'.json';
+            //$config_file_path='../../profiles/'.$_SERVER['HTTP_HOST'].'.json';
+            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/'.$_SERVER['HTTP_HOST'].'.json', __DIR__);//Find config path
         }
 
 
