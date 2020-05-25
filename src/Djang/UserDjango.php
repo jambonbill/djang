@@ -18,6 +18,7 @@
 
 namespace Djang;
 
+use PDO;
 
 /**
 * @brief Class providing django users
@@ -101,7 +102,7 @@ class UserDjango
         $query  = $this->db->prepare('SELECT id, email, password, is_active, is_staff, is_superuser FROM auth_user WHERE email =  ?');
 
         if ($query->execute(array($email))) {
-            $row = $query->fetch(\PDO::FETCH_ASSOC);
+            $row = $query->fetch(PDO::FETCH_ASSOC);
             //var_dump($row);
             if (!empty($row)) {
                 //print_r($row);
@@ -237,7 +238,7 @@ class UserDjango
         $sql = "SELECT * FROM django_session WHERE session_key='$sid';";
         //$q=$this->db->query($sql);// or die( $this->db->)
         $q=$this->db->query($sql) or die(print_r($this->db->errorInfo()));
-        $r=$q->fetch(\PDO::FETCH_ASSOC);
+        $r=$q->fetch(PDO::FETCH_ASSOC);
 
         //var_dump($r);
         return $r;
@@ -342,7 +343,7 @@ class UserDjango
 
         $sql="SELECT * FROM auth_user WHERE id=$uid LIMIT 1;";
         $q=$this->db->query($sql);
-        $r=$q->fetch(\PDO::FETCH_ASSOC);
+        $r=$q->fetch(PDO::FETCH_ASSOC);
         return $r;
     }
 
