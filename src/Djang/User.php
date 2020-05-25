@@ -95,7 +95,9 @@ class User
         $sql="SELECT * FROM auth_user WHERE id=$id LIMIT 1;";
         $q=$this->db()->query($sql) or die("Errror:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
 
-        return false;
+        $r=$q->fetch(PDO::FETCH_ASSOC);
+        return $r;
+        //return false;
     }
 
 
