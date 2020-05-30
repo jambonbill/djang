@@ -77,6 +77,7 @@ class Base
         $this->log = new Logger('djang');
 
         $table='djang_log';
+
         if (isset($this->_config->logger->table)) {
             $table=$this->_config->logger->table;
         }
@@ -213,6 +214,34 @@ class Base
     }
 
 
+    /**
+     * Login with the cron user.
+     * @return [type] [description]
+     */
+    public function loginCron()
+    {
+        //Get creds in config
+        $conf=$this->config();
+
+        if (!isset($conf->cron)) {
+            throw new Exception("Error : cron profile not found.", 1);
+        }
+
+        $user=$conf->cron->username;
+        $pass=$conf->cron->password;
+
+        if (!$user) {
+            throw new Exception("Error : no email", 1);
+        }
+
+        if (!$pass) {
+            throw new Exception("Error : no pass", 1);
+        }
+
+        return $this->login($user, $pass);
+    }
+
+
 
     /**
      * End user session
@@ -238,6 +267,10 @@ class Base
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $agent=substr($_SERVER['HTTP_USER_AGENT'], 0, 255);
+        }
+
+        if (php_sapi_name() == "cli") {
+            $agent='cli';
         }
 
         if (isset($_SERVER['REMOTE_ADDR'])) {
