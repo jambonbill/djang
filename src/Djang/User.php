@@ -121,15 +121,6 @@ class User
     }
 
 
-    /**
-     * Remove this
-     * @return [type] [description]
-     */
-    public function testlog()
-    {
-        $this->log()->addInfo(__FUNCTION__, ['user_id'=>333]);
-    }
-
 
     /**
      * Create a active django/edx user
@@ -141,7 +132,7 @@ class User
     public function create($email = '', $first_name = '', $last_name = '')
     {
 
-        $this->log()->addInfo(__FUNCTION__."($email,[...])", ['user_id'=>$this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__."($email,[...])", ['userid'=>$this->_uid()]);
 
 
         // echo "userCreate();\n";
@@ -193,7 +184,7 @@ class User
 
         //print_r($data);exit;
 
-        $this->log()->addInfo(__FUNCTION__ . "($user_id, data)", ['user_id' => $this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id, data)", ['userid' => $this->_uid()]);
 
         $sql="UPDATE auth_user SET email=".$this->db()->quote($data['email']);
         $sql.=", first_name=".$this->db()->quote($data['first_name']);
@@ -236,7 +227,7 @@ class User
 
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
 
-        $this->log()->addInfo(__FUNCTION__ . "($user_id, data)", ['user_id' => $this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id, data)", ['userid' => $this->_uid()]);
 
         return true;
     }
@@ -260,7 +251,7 @@ class User
         $sql = "UPDATE `auth_user` SET is_active=1 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
 
-        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['userid' => $this->_uid()]);
 
         return true;
     }
@@ -283,7 +274,7 @@ class User
 
         $sql = "UPDATE `auth_user` SET is_active=0 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
-        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['user_id' => $this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__ . "($user_id)", ['userid' => $this->_uid()]);
 
         return true;
     }
@@ -317,7 +308,7 @@ class User
         $this->db()->query($sql) or die("Error:" . print_r($this->db()->errorInfo(),1) . "<hr />$sql");
         $ID = $this->db()->lastInsertId();
 
-        $this->log()->addInfo(__FUNCTION__."(".$user_id.")", ['user_id' => $this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__."(".$user_id.")", ['userid' => $this->_uid()]);
         return $ID;
     }
 
@@ -371,7 +362,7 @@ class User
         $sql = "UPDATE auth_user SET password=".$this->db()->quote($password)." WHERE id=$user_id LIMIT 1;";
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
 
-        $this->log()->addInfo(__FUNCTION__."($user_id,password)", ['user_id'=>$this->_uid()]);
+        $this->log()->addInfo(__FUNCTION__."($user_id, password)", ['userid'=>$this->_uid()]);
 
         return true;
     }
