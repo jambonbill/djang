@@ -35,6 +35,7 @@ class Base
 
     /**
      * Main constructor
+     * config path is optional
      */
     public function __construct($path='')
     {
@@ -42,10 +43,12 @@ class Base
 
         if ($path) {
             $config_file_path=realpath($path);
-        }else{
-            //$config_file_path='../../profiles/'.$_SERVER['HTTP_HOST'].'.json';
-            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/'.$_SERVER['HTTP_HOST'].'.json', __DIR__);//Find config path
-            $config_file_path=str_replace('www.', '', $config_file_path);//Fix www.
+        } else if(php_sapi_name()=='cli') {
+            // CLI Config
+            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/cli.json', __DIR__);
+        } else {
+            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/'.$_SERVER['HTTP_HOST'].'.json', __DIR__);//Find conf.path
+            $config_file_path=str_replace('www.', ' ', $config_file_path);//Fix www
         }
 
 
@@ -334,6 +337,16 @@ class Base
      * @return [type] [description]
      */
     public function userId()
+    {
+        return $this->_user['id'];
+    }
+
+
+    /**
+     * Alias for userId()
+     * @return [type] [description]
+     */
+    public function uid()
     {
         return $this->_user['id'];
     }
