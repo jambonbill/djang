@@ -48,7 +48,7 @@ class Base
             $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/cli.json', __DIR__);
         } else {
             $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/'.$_SERVER['HTTP_HOST'].'.json', __DIR__);//Find conf.path
-            $config_file_path=str_replace('www.', ' ', $config_file_path);//Fix www
+            $config_file_path=str_replace('www.', '', $config_file_path);//Fix www
         }
 
 
