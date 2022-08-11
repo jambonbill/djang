@@ -113,13 +113,8 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function group($id=0)
+    public function group(int $id)
     {
-        $id*=1;
-
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT * FROM auth_group WHERE id='.$id.' LIMIT 1;';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -137,7 +132,7 @@ class Auth
      * @param  string $name [description]
      * @return [type]       [description]
      */
-    public function groupCreate($name='')
+    public function groupCreate(string $name)
     {
         $name=trim($name);
 
@@ -158,13 +153,9 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function groupDelete($id=0)
+    public function groupDelete(int $id)
     {
-        $id*=1;
 
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql="DELETE FROM auth_group WHERE id=$id LIMIT 1;";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -178,13 +169,9 @@ class Auth
      * @param  integer $group_id [description]
      * @return [type]            [description]
      */
-    public function groupPermissions($group_id=0)
+    public function groupPermissions(int $group_id)
     {
-        $group_id*=1;
 
-        if (!$group_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT * FROM auth_group_permissions WHERE group_id="'.$this->db()->quote($group_id).'";';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -203,13 +190,9 @@ class Auth
      * @param  integer $group_id [description]
      * @return [type]            [description]
      */
-    public function groupUsers($group_id=0)
+    public function groupUsers(int $group_id)
     {
-        $group_id*=1;
 
-        if (!$group_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT user_id FROM auth_user_groups WHERE group_id='.$group_id.';';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -229,10 +212,8 @@ class Auth
      * @param  integer $user_id  [description]
      * @return [type]            [description]
      */
-    public function groupUserAdd($group_id=0, $user_id=0)
+    public function groupUserAdd(int $group_id, int $user_id)
     {
-        $group_id*=1;
-        $user_id*=1;
 
         //TODO
 
@@ -250,13 +231,9 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function groupUserDelete($id=0)
+    public function groupUserDelete(int $id)
     {
-        $id*=1;
 
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql="DELETE FROM auth_user_groups WHERE id=$id LIMIT 1;";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -270,13 +247,8 @@ class Auth
      * @param  integer $user_id [description]
      * @return [type]           [description]
      */
-    public function userGroups($user_id=0)
+    public function userGroups(int $user_id)
     {
-        $user_id*=1;
-
-        if (!$user_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT group_id FROM auth_user_groups WHERE user_id='.$user_id.';';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -296,18 +268,8 @@ class Auth
      * @param  integer $permission_id [description]
      * @return [type]                 [description]
      */
-    public function groupPermissionAdd($group_id=0, $permission_id=0)
+    public function groupPermissionAdd(int $group_id, int $permission_id)
     {
-        $group_id*=1;
-        $permission_id*=1;
-
-        if (!$group_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
-
-        if (!$permission_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         //make sure permission exist
         $sql="INSERT INTO auth_group_permissions (group_id, permission_id) VALUES ($group_id, $permission_id);";
@@ -321,13 +283,8 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function groupPermissionDelete($id=0)
+    public function groupPermissionDelete(int $id)
     {
-        $id*=1;
-
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         //make sure permission exist
 
@@ -355,13 +312,8 @@ class Auth
      * @param  integer $user_id [description]
      * @return [type]           [description]
      */
-    public function userPermissions($user_id=0)
+    public function userPermissions(int $user_id)
     {
-        $user_id*=1;
-
-        if (!$user_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT * FROM auth_user_user_permissions WHERE user_id='.$user_id.';';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -380,14 +332,8 @@ class Auth
      * @param  integer $permission_id [description]
      * @return [type]                 [description]
      */
-    public function userPermissionAdd($user_id=0, $permission_id=0)
+    public function userPermissionAdd(int $user_id, int $permission_id)
     {
-        $user_id*=1;
-        $permission_id*=1;
-
-        if (!$user_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         // Check that permission exist
         if(!$this->permission($permission_id)){
@@ -406,13 +352,9 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function userPermissionDelete($id=0)
+    public function userPermissionDelete(int $id)
     {
-        $id*=1;
 
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql="DELETE FROM auth_user_user_permissions WHERE id=".$id." LIMIT 1;";
         $this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -426,13 +368,9 @@ class Auth
      * @param  integer $id [description]
      * @return [type]      [description]
      */
-    public function permission($id=0)
+    public function permission(int $id)
     {
-        $id*=1;
 
-        if (!$id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql='SELECT * FROM auth_permission WHERE id='.$this->db()->quote($id).' LIMIT 1;';
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");
@@ -533,7 +471,7 @@ class Auth
      * @param  string $email [description]
      * @return [type]        [description]
      */
-    public function exist($email='')
+    public function exist(string $email)
     {
         $email=trim($email);
 
@@ -557,13 +495,9 @@ class Auth
      * @param  integer $user_id [description]
      * @return [type]           [description]
      */
-    public function userAgents($user_id=0)
+    public function userAgents(int $user_id)
     {
-        $user_id*=1;
 
-        if (!$user_id) {
-            throw new Exception("Error Processing Request", 1);
-        }
 
         $sql="SELECT * FROM auth_user_agent WHERE aua_user_id=".$this->db()->quote($user_id)." ORDER BY aua_id DESC;";
         $q=$this->db()->query($sql) or die("Error:".print_r($this->db()->errorInfo(), true)."<hr />$sql");

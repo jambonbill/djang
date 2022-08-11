@@ -84,7 +84,7 @@ class User
      *
      * @return [type]      [description]
      */
-    public function auth_user($id=0)
+    public function auth_user(int $id=0)
     {
         $id*=1;
 
@@ -129,7 +129,7 @@ class User
      * @param  string $last_name   last name, 30 chars max
      * @return integer             user_id
      */
-    public function create($email = '', $first_name = '', $last_name = '')
+    public function create(string $email, string $first_name, string $last_name)
     {
 
         $this->log()->addInfo(__FUNCTION__."($email,[...])", ['userid'=>$this->_uid()]);
@@ -174,13 +174,8 @@ class User
      * email, first_name, last_name
      * @return [type] [description]
      */
-    public function update($user_id=0, $data=[])
+    public function update(int $user_id, array $data=[])
     {
-        $user_id*=1;
-
-        if (!$user_id) {
-            return false;
-        }
 
         //print_r($data);exit;
 
@@ -199,13 +194,9 @@ class User
     }
 
 
-    public function updateProfile($user_id, $data)
+    public function updateProfile(int $user_id, array $data)
     {
-        $user_id*=1;
 
-        if (!$user_id) {
-            return false;
-        }
 
         $sql="UPDATE auth_user_profile SET aup_updated=NOW(), aup_updater=".$this->_uid();
 
@@ -240,13 +231,9 @@ class User
      *
      * @return [type]           [description]
      */
-    public function activate($user_id=0)
+    public function activate(int $user_id)
     {
-        $user_id *= 1;
 
-        if (!$user_id) {
-            return false;
-        }
 
         $sql = "UPDATE `auth_user` SET is_active=1 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
@@ -264,13 +251,9 @@ class User
      *
      * @return [type]           [description]
      */
-    public function deactivate($user_id=0)
+    public function deactivate(int $user_id)
     {
-        $user_id *= 1;
 
-        if (!$user_id) {
-            return false;
-        }
 
         $sql = "UPDATE `auth_user` SET is_active=0 WHERE id='$user_id' LIMIT 1;";
         $this->db()->query($sql) or die($this->db()->errorInfo()[2]."\n$sql");
@@ -285,13 +268,8 @@ class User
      * @param  integer $user_id [description]
      * @return [type]           [description]
      */
-    public function userProfileCreate($user_id=0)
+    public function userProfileCreate(int $user_id)
     {
-        $user_id*=1;
-
-        if ($user_id<1) {
-            return false;
-        }
 
         // Make sure the profile is note already created //
         $sql="SELECT aup_id FROM `auth_user_profile` WHERE aup_user_id=$user_id LIMIT 1;";
@@ -319,7 +297,7 @@ class User
      * Return the user_id, for a given username or email adress
      * @return [type] [description]
      */
-    public function exist($username='')
+    public function exist(string $username)
     {
         $username=trim($username);
 
@@ -351,13 +329,8 @@ class User
      *
      * @return [type]           [description]
      */
-    public function updatePassword($user_id = 0, $password = '')
+    public function updatePassword(int $user_id, string $password)
     {
-        $user_id*=1;
-
-        if (!$password || !$user_id) {
-            return false;
-        }
 
         $sql = "UPDATE auth_user SET password=".$this->db()->quote($password)." WHERE id=$user_id LIMIT 1;";
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true));
@@ -375,7 +348,7 @@ class User
      * @param  integer $user_id [description]
      * @return [type]           [description]
      */
-    public function profile($user_id=0)
+    public function profile(int $user_id)
     {
         $user=[];
         $user=$this->_Base->authUser($user_id);
@@ -402,7 +375,7 @@ class User
      * @param  string  $perm [description]
      * @return boolean       [description]
      */
-    public function has_perm($perm='')
+    public function has_perm(string $perm='')
     {
 
     }

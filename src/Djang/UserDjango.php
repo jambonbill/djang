@@ -91,7 +91,7 @@ class UserDjango
     *
     * Check if the password is correct without logging in the user
     */
-    public function checkPassword($email = '', $password = '')
+    public function checkPassword(string $email, string $password)
     {
         if (!$this->db) {
             return false;
@@ -152,7 +152,7 @@ class UserDjango
     * @param $sub The String to be found
     * @returns true/false
     */
-    private function beginsWith($str, $sub)
+    private function beginsWith(string $str, string $sub)
     {
         return (substr($str, 0, strlen($sub)) === $sub );
     }
@@ -163,7 +163,7 @@ class UserDjango
      * @param  string $password [description]
      * @return [type]           [description]
      */
-    public function djangopassword($password = '')
+    public function djangopassword(string $password)
     {
         $algorithm='sha256';
         $iter='10000';
@@ -183,13 +183,8 @@ class UserDjango
      * @param  [type] $userid     [description]
      * @return [type]             [description]
      */
-    public function djangoSessionRegister($session_id = '', $userid = 0)
+    public function djangoSessionRegister(string $session_id = '', int $userid = 0)
     {
-        $userid*=1;
-
-        if (!$userid) {
-            return false;
-        }
 
         $session_id=session_id();
 
@@ -206,13 +201,8 @@ class UserDjango
      * Update "last_login" time
      * @return [type] [description]
      */
-    public function updateLastLogin($userid=0)
+    public function updateLastLogin(int $userid)
     {
-        $userid*=1;
-
-        if (!$userid) {
-            return false;
-        }
 
         $sql = "UPDATE auth_user SET last_login=NOW() WHERE id=$userid LIMIT 1;";
         $this->db->query($sql) or die(print_r($this->db->errorInfo()));
@@ -249,7 +239,7 @@ class UserDjango
      * @brief Log in (jambon session system)
      * @return bool true on success
      */
-    public function login($email = '', $pass = '')
+    public function login(string $email, string $pass)
     {
         $this->user = $this->checkPassword($email, $pass);
         //print_r($user);exit;
@@ -275,7 +265,7 @@ class UserDjango
      * @param  string $pass  [description]
      * @return [type]        [description]
      */
-    public function loginStaff($email='', $pass='')
+    public function loginStaff(string $email, string $pass)
     {
         $this->user = $this->checkPassword($email, $pass);
         //print_r($user);exit;
@@ -333,13 +323,8 @@ class UserDjango
      *
      * @return [type]       [description]
      */
-    public function auth_user($uid = 0)
+    public function auth_user(int $uid)
     {
-        $uid*=1;
-
-        if (!$uid) {
-            return false;
-        }
 
         $sql="SELECT * FROM auth_user WHERE id=$uid LIMIT 1;";
         $q=$this->db->query($sql);
