@@ -1,7 +1,7 @@
 <?php
 /**
- * $package CRM
- * PHP version 7
+ * Djang Base
+ * PHP version 7+
  *
  * @category CRM
  * @package  PackageName
@@ -15,43 +15,66 @@
 namespace Djang;
 
 use PDO;
+use PDOException;
 use Exception;
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use MySQLHandler\MySQLHandler;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\HttpKernel\Kernel;
+
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
+
+
 
 /**
  * This Base class deal with db connection and the basic user identificaton.
  *
  * @brief Jambonbill Djang base functions
  */
-class Base
-{
+class Base extends Kernel
+{    
+
     private $_db;
     private $_UD;
     private $_config;
     private $_user;
     private $log = null;//logger
 
+
+    public function registerBundles(): array 
+    {
+        // Register your bundles here if needed
+        return [];
+    }
+    
+    public function registerContainerConfiguration(\Symfony\Component\Config\Loader\LoaderInterface $loader) {
+        // Load your container configuration if needed
+    }
+
     /**
      * Main constructor
      * config path is optional
      */
-    public function __construct($path='')
+    public function __construct()
     {
 
+        //$this->kernel = $kernel;
 
-        if ($path) {
-            $config_file_path=realpath($path);
-        } else if(php_sapi_name()=='cli') {
-            // CLI Config
-            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/cli.json', __DIR__);
-        } else {
-            $config_file_path=preg_replace("/\/vendor\/.*/",'/profiles/'.$_SERVER['HTTP_HOST'].'.json', __DIR__);//Find conf.path
-            $config_file_path=str_replace('www.', '', $config_file_path);//Fix www
-        }
+        //exit($this->kernel->getProjectDir());
 
+        // Create a Dotenv instance
+        $dotenv = new Dotenv();
+        
+        // Load the values from the .env file based on the APP_ENV
+        //$env = $_SERVER['APP_ENV'] ?? 'dev';
+        
+        $dotenv->loadEnv($this->getProjectDir().'/.env');
+        $dotenv->loadEnv($this->getProjectDir().'/.env.local');
 
+        //dd($_ENV);
+        
+        /*
         if (!is_file($config_file_path)) {
             throw new Exception('Error: no config file "' . $config_file_path . '"');
         } else {
@@ -62,20 +85,35 @@ class Base
                 exit("JSON error: $err\n");
             }
             //print_r($this->_config->pdo);exit;
-            $this->_connect();
         }
+        */
+
+        try {
+            $this->_config = Yaml::parseFile($this->getProjectDir().'/config/djang.yaml');
+            //dd($value);
+        } catch (ParseException $e) {
+            //printf("Unable to parse the YAML string: %s", $e->getMessage());
+        }
+
+
+
+
+        $this->_connect();//DB connection
 
         //User
         $this->_UD=new UserDjango($this->_db);
         $session = $this->_UD->djangoSession();//
-
-        $this->_user = $this->_UD->auth_user($session['session_data']);
-
-        // Update session keys
-        $_SESSION['{email}']=   $this->_user['email'];
-        $_SESSION['{username}']=$this->_user['username'];
-        $_SESSION['{first_name}']=$this->_user['first_name'];
-        $_SESSION['{last_name}']=$this->_user['last_name'];
+        //dd($session);
+        
+        if ($session) {
+            $this->_user = $this->_UD->auth_user($session['session_data']);
+            // Update session keys
+            $_SESSION['{email}']=   $this->_user['email'];
+            $_SESSION['{username}']=$this->_user['username'];
+            $_SESSION['{first_name}']=$this->_user['first_name'];
+            $_SESSION['{last_name}']=$this->_user['last_name'];
+        }
+        
 
         // Logger // TODO
         $this->log = new Logger('djang');
@@ -102,18 +140,28 @@ class Base
      */
     private function _connect()
     {
+        $databaseUrl = $_ENV['DATABASE_URL'] ?? null;
+        if ($databaseUrl) {
+            // Parse the DATABASE_URL using Symfony's UrlParser
+            //$urlParser = new UrlParser();
+            $parts = parse_url($databaseUrl);
+            //dd($parts);
+            $db_name = substr($parts['path'], 1); // mydb
+        }
 
-        $db_host = $this->_config->pdo->host;
-        $db_name = $this->_config->pdo->name;
-        $db_driver=$this->_config->pdo->driver;
-        $db_user = $this->_config->pdo->user;
-        $db_pass = $this->_config->pdo->pass;
+        $db_type = explode(':', $parts['scheme'])[0]; // mysql
+        $db_user = $parts['user']; // user
+        $db_pass = $parts['pass']; // pass
+        $db_host = $parts['host']; // localhost
+        $port = $parts['port']; // 3306
 
         try {
-            $dsn = $db_driver . ":host=" . $db_host . ";dbname=" . $db_name . ";charset=utf8";
+            $dsn = $db_type . ":host=" . $db_host . ";dbname=" . $db_name . ";charset=utf8";
             $this->_db = new PDO($dsn, $db_user, $db_pass);
+            $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+
         } catch (PDOException $e) {
-            self::$failed = true;
+            //self::$failed = true;
             echo "<li>" . $e->getMessage();
             return false;
         }
@@ -165,8 +213,9 @@ class Base
      * @param  string $password [description]
      * @return [type]           [description]
      */
-    public function login($email='', $password='')
+    public function login(string $email, string $password): bool
     {
+        /*
         if (!$email) {
             throw new Exception("Error : no email", 1);
         }
@@ -174,12 +223,17 @@ class Base
         if (!$password) {
             throw new Exception("Error : no password", 1);
         }
-
+        */
 
         if ($this->_UD->login($email, $password)) {
+            
             $session = $this->_UD->djangoSession();//
-            $this->_user = $this->_UD->auth_user($session['session_data']);
-            $this->logAgent();
+            
+            if ($session) {
+                $this->_user = $this->_UD->auth_user($session['session_data']);
+                $this->logAgent();
+            }
+            
         } else {
             return false;//log fail
         }
@@ -195,7 +249,7 @@ class Base
      * @param  string $password [description]
      * @return [type]           [description]
      */
-    public function loginStaff($email='', $password='')
+    public function loginStaff(string $email, string $password)
     {
         if (!$email) {
             throw new Exception("Error : no email", 1);
@@ -338,7 +392,10 @@ class Base
      */
     public function userId()
     {
-        return $this->_user['id'];
+        if (isset($this->_user['id'])) {
+            return $this->_user['id'];
+        }
+        return false;
     }
 
 
@@ -348,7 +405,7 @@ class Base
      */
     public function uid()
     {
-        return $this->_user['id'];
+        return $this->userId();
     }
 
 
@@ -412,17 +469,13 @@ class Base
         return [];
     }
 
-    public function authUserProfile($uid=0)
+    public function authUserProfile(int $uid)
     {
-        $uid*=1;
-
-        if (!$uid) {
-            return [];
-        }
 
         $sql="SELECT * FROM auth_user_profile WHERE aup_user_id=$uid LIMIT 1;";
+
         $q=$this->db()->query($sql) or die(print_r($this->db()->errorInfo(), true) . "<hr />$sql");
-        $r=$q->fetch(\PDO::FETCH_ASSOC);
+        $r=$q->fetch(PDO::FETCH_ASSOC);
 
         if ($r) {
             return $r;
