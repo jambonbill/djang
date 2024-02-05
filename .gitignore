@@ -2,11 +2,10 @@
 vendor/
 composer.lock
 
-#configs
+#env
+.env.local
+
+#configs (old)
 profiles/*.json
 cli/*.json
 src/*.json
-
-
-# Google App Engine generated folder
-appengine-generated/
