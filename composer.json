@@ -17,6 +17,10 @@
     	"php": ">=7.0.0",
         "ext-pdo": "*",
 		"monolog/monolog": "^1.24",
-        "wazaari/monolog-mysql":">1.0.0"
+        "wazaari/monolog-mysql":">1.0.0",
+		"symfony/dotenv": "^6.4",
+		"symfony/http-kernel": "^6.4",
+		"symfony/config": "^6.4",
+		"symfony/yaml": "^6.4"
     }
 }
