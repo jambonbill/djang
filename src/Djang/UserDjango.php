@@ -19,6 +19,7 @@
 namespace Djang;
 
 use PDO;
+use Exception;
 
 /**
 * @brief Class providing django users
