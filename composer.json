@@ -7,9 +7,10 @@
             "homepage": "https://github.com/jambonbill"
         }
     ],
+    
     "autoload": {
-        "psr-0": {
-            "Djang": "src/"
+        "psr-4": {
+            "Djang\\": "src/Djang"
         }
     },
 
@@ -20,7 +21,6 @@
         "wazaari/monolog-mysql":">1.0.0",
 		"symfony/dotenv": "^6.4",
 		"symfony/http-kernel": "^6.4",
-		"symfony/config": "^6.4",
-		"symfony/yaml": "^6.4"
+		"symfony/config": "^6.4"
     }
 }
